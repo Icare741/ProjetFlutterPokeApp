@@ -33,7 +33,8 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
   }
 
   Future<void> _fetchPokemonList() async {
-    final response = await http.get(Uri.parse('${dotenv.env['API_BASE_URL']}pokemon?limit=151'));
+    final response = await http
+        .get(Uri.parse('${dotenv.env['API_BASE_URL']}pokemon?limit=151'));
     final json = jsonDecode(response.body);
     final results = json['results'];
 
@@ -44,10 +45,14 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
       final imageUrl = '${dotenv.env['POKEMON_SPRITE_BASE_URL']}${i + 1}.png';
       final typesUrl = await http.get(Uri.parse(pokemon['url']));
       final typesJson = jsonDecode(typesUrl.body);
-      final types = List<String>.from(typesJson['types'].map((type) => type['type']['name']));
-      
+      final types = List<String>.from(
+          typesJson['types'].map((type) => type['type']['name']));
 
-      pokemonList.add(Pokemon(name: name, imageUrl: imageUrl, types : types,));
+      pokemonList.add(Pokemon(
+        name: name,
+        imageUrl: imageUrl,
+        types: types,
+      ));
     }
 
     setState(() {
@@ -65,7 +70,10 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
     } else {
       List<Pokemon> searchResults = [];
       for (var i = 0; i < _pokemonList.length; i++) {
-        if (_pokemonList[i].name.toLowerCase().contains(searchText.toLowerCase())) {
+        if (_pokemonList[i]
+            .name
+            .toLowerCase()
+            .contains(searchText.toLowerCase())) {
           searchResults.add(_pokemonList[i]);
         }
       }
@@ -97,43 +105,75 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
           ),
         ),
       ),
-      body: _isLoading ? const Center(child: CircularProgressIndicator()) :
-      GridView.count(
-        crossAxisCount: 2,
-        children: _searchResults.map((pokemon) {
-          return GestureDetector(
-            onTap:  () {
-              Navigator.push(
-              context,
-              MaterialPageRoute(
-               builder: (context) => PokemonStats(pokemon: pokemon,))
-             
-              
-          );},
-            child: Container(
-              
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-
-                child: Column(
-                  
-                  
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.network(pokemon.imageUrl),
-                    const SizedBox(height: 8),
-                    Text(pokemon.name),
-                    Text('Types: ${pokemon.types.join(", ")}')
-                  ],
-                ),
-              ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : GridView.count(
+              crossAxisCount: 2,
+              children: _searchResults.map((pokemon) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PokemonStats(
+                                  pokemon: pokemon,
+                                )));
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 10.0),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(pokemon.name),
+                          Image.network(pokemon.imageUrl),
+                          const SizedBox(height: 8),
+                          
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              
+                              Container(
+                                
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: BoxDecoration(
+                                  
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: Text(
+                                  
+                                  pokemon.types[0],
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              Padding(padding: const EdgeInsets.all(10.0)),
+                              if(pokemon.types.length > 1)
+                            Container(
+                              padding: const EdgeInsets.all(10.0),
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: Text(
+                                pokemon.types[1],
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            ],
+                          ),
+                           
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
-          );
-        }).toList(),
-      ),
     );
   }
 }
