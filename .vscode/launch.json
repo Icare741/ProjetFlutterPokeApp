@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "pokeflood",
+            "cwd": "pokeflood",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "pokeflood (profile mode)",
+            "cwd": "pokeflood",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "pokeflood (release mode)",
+            "cwd": "pokeflood",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}
