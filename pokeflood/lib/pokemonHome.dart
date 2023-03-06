@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:pokeflood/pokemonStats.dart';
 import 'dart:convert';
 import 'pokemon.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:pokeflood/pokemonStats.dart';
 
 class PokemonListWidget extends StatefulWidget {
   const PokemonListWidget({required Key key}) : super(key: key);
@@ -16,6 +18,7 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
   List<Pokemon> _pokemonList = [];
   List<Pokemon> _searchResults = [];
   final _searchController = TextEditingController();
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -42,13 +45,15 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
       final typesUrl = await http.get(Uri.parse(pokemon['url']));
       final typesJson = jsonDecode(typesUrl.body);
       final types = List<String>.from(typesJson['types'].map((type) => type['type']['name']));
+      
 
-      pokemonList.add(Pokemon(name, imageUrl, types));
+      pokemonList.add(Pokemon(name: name, imageUrl: imageUrl, types : types,));
     }
 
     setState(() {
       _pokemonList = pokemonList;
       _searchResults = pokemonList;
+      _isLoading = false;
     });
   }
 
@@ -92,22 +97,38 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
           ),
         ),
       ),
-      body: GridView.count(
+      body: _isLoading ? const Center(child: CircularProgressIndicator()) :
+      GridView.count(
         crossAxisCount: 2,
         children: _searchResults.map((pokemon) {
           return GestureDetector(
             onTap:  () {
-              print(pokemon.name);
-            },
-            child: Card(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.network(pokemon.imageUrl),
-                  const SizedBox(height: 8),
-                  Text(pokemon.name),
-                  Text('Types: ${pokemon.types.join(", ")}')
-                ],
+              Navigator.push(
+              context,
+              MaterialPageRoute(
+               builder: (context) => PokemonStats(pokemon: pokemon,))
+             
+              
+          );},
+            child: Container(
+              
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+
+                child: Column(
+                  
+                  
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.network(pokemon.imageUrl),
+                    const SizedBox(height: 8),
+                    Text(pokemon.name),
+                    Text('Types: ${pokemon.types.join(", ")}')
+                  ],
+                ),
               ),
             ),
           );

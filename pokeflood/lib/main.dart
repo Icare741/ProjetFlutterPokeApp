@@ -17,7 +17,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       routes: {
         
-        '/pokemon': (context) => PokemonListWidget(key: Key('pokemon-list')),
+        '/pokemon': (context) => const PokemonListWidget(key: Key('pokemon-list')),
+        
+        
       },
       title: 'Flutter Demo',
       initialRoute: '/pokemon',
