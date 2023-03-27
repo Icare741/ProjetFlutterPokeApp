@@ -1,12 +1,11 @@
-import 'dart:html';
-import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokeflood/pokemonStats.dart';
 import 'dart:convert';
 import 'pokemon.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:pokeflood/pokemonStats.dart';
+
 
 class PokemonListWidget extends StatefulWidget {
   const PokemonListWidget({required Key key}) : super(key: key);
@@ -56,12 +55,12 @@ Future<Pokemon> _fetchPokemon(pokemon) async {
       int specialdefense = baseStats[4]['base_stat'];
       int weight = typesJson['weight'];
       int height = typesJson['height'];
-      List<String> abilities = List<String>.from(
-          typesJson['abilities'].map((ability) => ability['ability']['name']));
       final speciesUrl = await http.get(Uri.parse(typesJson['species']['url']));
       final speciesJson = jsonDecode(speciesUrl.body);
       final flavorText = speciesJson['flavor_text_entries'].firstWhere(
-          (entry) => entry['language']['name'] == 'en')['flavor_text'];
+          (entry) => entry['language']['name'] == 'fr')['flavor_text'];
+
+
            setState(() {
         _isSearching = true;
       });
@@ -78,7 +77,6 @@ Future<Pokemon> _fetchPokemon(pokemon) async {
         specialdefense: specialdefense,
         weight: weight.toDouble(),
         height: height.toDouble(),
-        abilities: abilities,
         description: flavorText,
       );
      

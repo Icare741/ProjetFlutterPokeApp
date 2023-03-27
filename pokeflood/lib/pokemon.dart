@@ -2,7 +2,7 @@ class Pokemon {
   final String name;
   final String imageUrl;
   final List<String> types;
-  final List<String> abilities;
+  
   
 
 
@@ -21,7 +21,6 @@ class Pokemon {
     {required this.name, 
     required this.imageUrl, 
     required this.types,
-    required this.abilities,
     this.hp,
     this.attack,
     this.defense,
