@@ -31,12 +31,13 @@ Utilisation :
 
 À l'ouverture de l'application, les utilisateurs sont présentés avec une liste de tous les Pokémon disponibles. En appuyant sur un Pokémon, ses statistiques sont affichées, y compris son nom, son type et divers attributs tels que l'attaque et la défense.
 
-Vous pouvez scrollé vers le bas pour afficher le restes des pokemons dans leurs ordres d'identifiant dans le pokedex.
+Vous pouvez faire défiler la liste vers le bas pour afficher le reste des Pokémons dans l'ordre de leur identifiant dans le Pokédex.
 
 Les utilisateurs peuvent naviguer en arrière vers la liste des Pokémon en utilisant le bouton de retour sur leur appareil ou en faisant glisser de gauche à droite sur l'écran.
 
-Info au professeurs : 
-L'api ne dispose pas de méthode de recherches. Par conséquent la recherche barres ne fonctionne que avec les pokemons déja loader mais la fonction de recherche de l'api est tout de même disponible dans le code en commentaire dans le fichier pokemonHome ligne 125.
+Info au professeur :
+
+L'API ne dispose pas de méthode de recherche. Par conséquent, la barre de recherche ne fonctionne qu'avec les Pokémons déjà chargés, mais la fonction de recherche de l'API est tout de même disponible dans le code en commentaire dans le fichier "pokemonHome" à la ligne 125.
 
 
 
