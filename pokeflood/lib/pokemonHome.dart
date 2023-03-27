@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -47,11 +48,36 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
       final typesJson = jsonDecode(typesUrl.body);
       final types = List<String>.from(
           typesJson['types'].map((type) => type['type']['name']));
+      final baseStats = typesJson['stats'];
+      int hp = baseStats[0]['base_stat'];
+      int attack = baseStats[1]['base_stat'];
+      int defense = baseStats[2]['base_stat'];
+      int speed = baseStats[5]['base_stat'];
+      int specialattack = baseStats[3]['base_stat'];
+      int specialdefense = baseStats[4]['base_stat'];
+      int weight = typesJson['weight'];
+      int height = typesJson['height'];
+      List<String> abilities = List<String>.from(
+          typesJson['abilities'].map((ability) => ability['ability']['name']));
+      final speciesUrl = await http.get(Uri.parse(typesJson['species']['url']));
+      final speciesJson = jsonDecode(speciesUrl.body);
+      final flavorText = speciesJson['flavor_text_entries'].firstWhere(
+          (entry) => entry['language']['name'] == 'en')['flavor_text'];
 
       pokemonList.add(Pokemon(
         name: name,
         imageUrl: imageUrl,
         types: types,
+        hp: hp,
+        attack: attack,
+        defense: defense,
+        speed: speed,
+        specialattack: specialattack,
+        specialdefense: specialdefense,
+        weight: weight.toDouble(),
+        height: height.toDouble(),
+        abilities: abilities,
+        description: flavorText,
       ));
     }
 
@@ -132,41 +158,35 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
                           Text(pokemon.name),
                           Image.network(pokemon.imageUrl),
                           const SizedBox(height: 8),
-                          
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              
                               Container(
-                                
                                 padding: const EdgeInsets.all(10.0),
                                 decoration: BoxDecoration(
-                                  
                                   color: Colors.grey,
                                   borderRadius: BorderRadius.circular(10.0),
                                 ),
                                 child: Text(
-                                  
                                   pokemon.types[0],
                                   style: const TextStyle(color: Colors.white),
                                 ),
                               ),
                               Padding(padding: const EdgeInsets.all(10.0)),
-                              if(pokemon.types.length > 1)
-                            Container(
-                              padding: const EdgeInsets.all(10.0),
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              child: Text(
-                                pokemon.types[1],
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ),
+                              if (pokemon.types.length > 1)
+                                Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: Text(
+                                    pokemon.types[1],
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
                             ],
                           ),
-                           
                         ],
                       ),
                     ),
