@@ -20,6 +20,7 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
   List<Pokemon> _searchResults = [];
   final _searchController = TextEditingController();
   bool _isLoading = true;
+  bool _isSearching = false;
   var nexturl = "";
   late ScrollController _scrollController;
   List<Pokemon> pokemonList = [];
@@ -61,7 +62,11 @@ Future<Pokemon> _fetchPokemon(pokemon) async {
       final speciesJson = jsonDecode(speciesUrl.body);
       final flavorText = speciesJson['flavor_text_entries'].firstWhere(
           (entry) => entry['language']['name'] == 'en')['flavor_text'];
+           setState(() {
+        _isSearching = true;
+      });
           return Pokemon(
+            
         name: name,
         imageUrl: imageUrl,
         types: types,
@@ -76,6 +81,7 @@ Future<Pokemon> _fetchPokemon(pokemon) async {
         abilities: abilities,
         description: flavorText,
       );
+     
 
 }
 
@@ -93,6 +99,7 @@ Future<Pokemon> _fetchPokemon(pokemon) async {
       _pokemonList = pokemonList;
       _searchResults = pokemonList;
       _isLoading = false;
+      _isSearching = false;
     });
   }
 
@@ -136,74 +143,61 @@ Future<Pokemon> _fetchPokemon(pokemon) async {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      
-      appBar: AppBar(
-        title: const Text('Liste de Pokémons'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(100.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
-              controller: _searchController,
-              onChanged: _onSearchTextChanged,
-              decoration: InputDecoration(
-                hintText: 'Recherche de Pokémon',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Liste de Pokémons'),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(100.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: TextField(
+            controller: _searchController,
+            onChanged: _onSearchTextChanged,
+            decoration: InputDecoration(
+              hintText: 'Recherche de Pokémon',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
               ),
             ),
           ),
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : GridView.count(
-            controller: _scrollController,
-              crossAxisCount: 2,
-              children: _searchResults.map((pokemon) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PokemonStats(
-                                  pokemon: pokemon,
-                                )));
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 10.0),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(pokemon.name),
-                          Image.network(pokemon.imageUrl),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: Text(
-                                  pokemon.types[0],
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                              const Padding(
-                                  padding: const EdgeInsets.all(10.0)),
-                              if (pokemon.types.length > 1)
+    ),
+    body: _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Stack(
+            children: [
+              GridView.count(
+                controller: _scrollController,
+                crossAxisCount: 2,
+                children: _searchResults.map((pokemon) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PokemonStats(
+                                    pokemon: pokemon,
+                                  )));
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0, vertical: 10.0),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(pokemon.name),
+                            Image.network(pokemon.imageUrl),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
                                 Container(
                                   padding: const EdgeInsets.all(10.0),
                                   decoration: BoxDecoration(
@@ -211,19 +205,42 @@ Future<Pokemon> _fetchPokemon(pokemon) async {
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
                                   child: Text(
-                                    pokemon.types[1],
-                                    style: const TextStyle(color: Colors.white),
+                                    pokemon.types[0],
+                                    style:
+                                        const TextStyle(color: Colors.white),
                                   ),
                                 ),
-                            ],
-                          ),
-                        ],
+                                const Padding(
+                                    padding: const EdgeInsets.all(10.0)),
+                                if (pokemon.types.length > 1)
+                                  Container(
+                                    padding: const EdgeInsets.all(10.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius:
+                                          BorderRadius.circular(10.0),
+                                    ),
+                                    child: Text(
+                                      pokemon.types[1],
+                                      style: const TextStyle(
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }).toList(),
-            ),
-    );
-  }
+                  );
+                }).toList(),
+              ),
+              if (_isSearching == true)
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),
+            ],
+          ),
+  );
+}
 }
