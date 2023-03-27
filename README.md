@@ -2,7 +2,8 @@
 
 Pokeflood
 
-Pokeflood est une application mobile construite avec Flutter qui permet aux utilisateurs de parcourir tous les Pokémon disponibles et de voir leurs statistiques en appuyant sur chaque Pokémon individuellement.
+Pokeflood est une application mobile construite avec Flutter qui permet aux utilisateurs de parcourir tous les Pokémons disponibles et de voir leurs statistiques en appuyant sur chaque Pokémon individuellement.
+
 Fonctionnalités
 
     Parcourir tous les Pokémon disponibles
@@ -29,11 +30,11 @@ Lancez l'application :
 
 Utilisation :
 
-À l'ouverture de l'application, les utilisateurs sont présentés avec une liste de tous les Pokémon disponibles. En appuyant sur un Pokémon, ses statistiques sont affichées, y compris son nom, son type et divers attributs tels que l'attaque et la défense.
+À l'ouverture de l'application, les utilisateurs sont présentés avec une liste de tous les Pokémons disponibles. En appuyant sur un Pokémon, ses statistiques sont affichées, y compris son nom, son type et divers attributs tels que l'attaque et la défense.
 
 Vous pouvez faire défiler la liste vers le bas pour afficher le reste des Pokémons dans l'ordre de leur identifiant dans le Pokédex.
 
-Les utilisateurs peuvent naviguer en arrière vers la liste des Pokémon en utilisant le bouton de retour sur leur appareil ou en faisant glisser de gauche à droite sur l'écran.
+Les utilisateurs peuvent naviguer en arrière vers la liste des Pokémons en utilisant le bouton de retour sur leur appareil.
 
 Info au professeur :
 
@@ -49,7 +50,7 @@ Crédits
 
 Pokeflood a été créé par Enzo Lebuhotel.
 
-Les données sur les Pokémon utilisées dans cette application ont été obtenues à partir de l'API PokéAPI.
+Les données sur les Pokémons utilisées dans cette application ont été obtenues à partir de l'API PokéAPI.
 Licence
 
 Pokeflood est sous licence MIT License.
