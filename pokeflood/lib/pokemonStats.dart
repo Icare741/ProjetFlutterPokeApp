@@ -200,6 +200,7 @@ class PokemonStats extends StatelessWidget {
               ],
             ),
           ),
+          
         ],
       ),
     );

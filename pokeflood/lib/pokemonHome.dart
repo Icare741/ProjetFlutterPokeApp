@@ -20,11 +20,17 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
   List<Pokemon> _searchResults = [];
   final _searchController = TextEditingController();
   bool _isLoading = true;
+  var nexturl = "";
+  late ScrollController _scrollController;
+  List<Pokemon> pokemonList = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchPokemonList();
+    _fetchPokemonList(
+        Uri.parse('${dotenv.env['API_BASE_URL']}pokemon?limit=8'));
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScrollEnd);
   }
 
   @override
@@ -32,18 +38,10 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
     _searchController.dispose();
     super.dispose();
   }
-
-  Future<void> _fetchPokemonList() async {
-    final response = await http
-        .get(Uri.parse('${dotenv.env['API_BASE_URL']}pokemon?limit=151'));
-    final json = jsonDecode(response.body);
-    final results = json['results'];
-
-    List<Pokemon> pokemonList = [];
-    for (var i = 0; i < results.length; i++) {
-      final pokemon = results[i];
+Future<Pokemon> _fetchPokemon(pokemon) async {
       final name = pokemon['name'];
-      final imageUrl = '${dotenv.env['POKEMON_SPRITE_BASE_URL']}${i + 1}.png';
+      final idPokemon = pokemon['url'].split('/')[6];
+      final imageUrl = '${dotenv.env['POKEMON_SPRITE_BASE_URL']}${idPokemon}.png';
       final typesUrl = await http.get(Uri.parse(pokemon['url']));
       final typesJson = jsonDecode(typesUrl.body);
       final types = List<String>.from(
@@ -63,8 +61,7 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
       final speciesJson = jsonDecode(speciesUrl.body);
       final flavorText = speciesJson['flavor_text_entries'].firstWhere(
           (entry) => entry['language']['name'] == 'en')['flavor_text'];
-
-      pokemonList.add(Pokemon(
+          return Pokemon(
         name: name,
         imageUrl: imageUrl,
         types: types,
@@ -78,7 +75,18 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
         height: height.toDouble(),
         abilities: abilities,
         description: flavorText,
-      ));
+      );
+
+}
+
+  Future<void> _fetchPokemonList(Uri url) async {
+    final response = await http.get(url);
+    final json = jsonDecode(response.body);
+    final results = json['results'];
+    nexturl = json['next'];    
+    for (var i = 0; i < results.length; i++) {
+      final pokemon = results[i];
+      pokemonList.add(await _fetchPokemon(pokemon));
     }
 
     setState(() {
@@ -88,7 +96,7 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
     });
   }
 
-  void _onSearchTextChanged(String searchText) {
+  Future<void> _onSearchTextChanged(String searchText) async {
     if (searchText.isEmpty) {
       setState(() {
         _searchResults = _pokemonList;
@@ -107,11 +115,31 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
         _searchResults = searchResults;
       });
     }
+    //   List<Pokemon> searchResults = [];
+    //   final response = await http.get(Uri.parse('${dotenv.env['API_BASE_URL']}pokemon?name=${searchText}'));
+    // final json = jsonDecode(response.body);
+    // final results = json['results'];
+    //  for (var i = 0; i < results.length; i++) {
+    //   final pokemon = results[i];
+    //   searchResults.add(await _fetchPokemon(pokemon));
+     //}
+   
+  
+    
+  }
+
+  void _onScrollEnd() {
+    if (_scrollController.offset >=
+      _scrollController.position.maxScrollExtent &&
+      !_scrollController.position.outOfRange) {
+      _fetchPokemonList(Uri.parse(nexturl));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: AppBar(
         title: const Text('Liste de Pokémons'),
         bottom: PreferredSize(
@@ -134,6 +162,7 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : GridView.count(
+            controller: _scrollController,
               crossAxisCount: 2,
               children: _searchResults.map((pokemon) {
                 return GestureDetector(
@@ -172,7 +201,8 @@ class _PokemonListWidgetState extends State<PokemonListWidget> {
                                   style: const TextStyle(color: Colors.white),
                                 ),
                               ),
-                              Padding(padding: const EdgeInsets.all(10.0)),
+                              const Padding(
+                                  padding: const EdgeInsets.all(10.0)),
                               if (pokemon.types.length > 1)
                                 Container(
                                   padding: const EdgeInsets.all(10.0),
